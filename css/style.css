@@ -2333,3 +2333,554 @@ h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
 .es-perfect { font-size: 18px; margin: 16px 0; }
 .es-actions { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ========================================
+   PINYIN COURSE
+   ======================================== */
+
+/* Pinyin action button on home */
+.action-pinyin { border-color: rgba(96, 200, 160, 0.3); }
+.action-pinyin:active { background: rgba(96, 200, 160, 0.1); }
+
+/* Pinyin mode card in quiz */
+.mode-pinyin { border-color: rgba(96, 200, 160, 0.3); }
+
+/* Progress overview */
+.pinyin-progress-overview {
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.pinyin-progress-bar-track {
+  height: 10px;
+  background: var(--bg-input);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.pinyin-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #50c878, #80e0a0);
+  border-radius: 5px;
+  transition: width 0.5s ease;
+}
+.pinyin-progress-text {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+/* Lesson list */
+.pinyin-lesson-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pinyin-lesson-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text);
+  text-align: left;
+  width: 100%;
+}
+.pinyin-lesson-card:active { transform: scale(0.98); background: var(--bg-card-hover); }
+
+.lesson-locked { opacity: 0.5; cursor: default; }
+.lesson-locked:active { transform: none; }
+.lesson-completed { border-color: rgba(80, 200, 120, 0.3); }
+
+.pl-num {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-input);
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+.lesson-completed .pl-num { background: var(--green); color: #fff; }
+.pl-icon { font-size: 1.6rem; flex-shrink: 0; }
+.pl-info { flex: 1; }
+.pl-title { font-weight: 600; font-size: 0.95rem; color: var(--gold); }
+.pl-titlezh { font-size: 0.8rem; color: var(--text-dim); font-family: var(--font-zh); }
+.pl-desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+.pl-status { display: flex; flex-direction: column; align-items: center; gap: 2px; flex-shrink: 0; }
+.pl-check { font-size: 1.2rem; }
+.pl-score { font-size: 0.7rem; color: var(--green); font-weight: 600; }
+.pl-arrow { font-size: 1.2rem; color: var(--gold); }
+
+/* Lesson content sections */
+.py-lesson-content { margin-bottom: 20px; }
+
+.py-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.py-section h3 { font-size: 1rem; margin-bottom: 10px; }
+.py-section p { font-size: 0.9rem; line-height: 1.6; color: var(--text); }
+
+/* Tone chart */
+.tone-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.tone-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tone-card:active { transform: scale(0.98); }
+.tc-num { font-size: 0.75rem; color: var(--text-dim); font-weight: 600; }
+.tc-mark { font-size: 2rem; font-weight: 700; color: var(--gold); }
+.tc-name { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+.tc-desc { font-size: 0.8rem; color: var(--text-dim); text-align: center; }
+.tc-example { font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-zh), var(--font); }
+
+/* Pitch line indicators */
+.tc-pitch-line {
+  width: 60px;
+  height: 24px;
+  margin: 4px 0;
+}
+.tc-pitch-high-flat { border-top: 3px solid var(--gold); margin-top: 0; }
+.tc-pitch-rising { border-bottom: 3px solid var(--gold); transform: rotate(-15deg); }
+.tc-pitch-dipping { border-bottom: 3px solid var(--gold); border-radius: 0 0 50% 50%; }
+.tc-pitch-falling { border-top: 3px solid var(--gold); transform: rotate(15deg); }
+.tc-pitch-neutral { border-bottom: 2px dashed var(--text-muted); }
+
+/* Initial groups */
+.py-group { margin-bottom: 16px; }
+.py-group-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--purple);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+.py-initials-grid, .py-finals-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.py-initial-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg-input);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.py-initial-card:active { background: var(--bg-card-hover); }
+.pi-letter {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--gold);
+  min-width: 36px;
+  text-align: center;
+}
+.pi-desc { flex: 1; font-size: 0.8rem; color: var(--text-dim); }
+.pi-example { font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-zh), var(--font); }
+
+/* Final cards */
+.py-final-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--bg-input);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.py-final-card:active { background: var(--bg-card-hover); }
+.pf-letter { font-size: 1.1rem; font-weight: 700; color: var(--gold); min-width: 40px; }
+.pf-desc { flex: 1; font-size: 0.8rem; color: var(--text-dim); }
+
+/* Rules */
+.py-rule {
+  padding: 10px 12px;
+  background: var(--bg-input);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  border-left: 3px solid var(--purple);
+}
+.pr-rule { font-weight: 600; font-size: 0.9rem; color: var(--gold); margin-bottom: 4px; }
+.pr-desc { font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; }
+
+/* Combination table */
+.py-combos-scroll { overflow-x: auto; }
+.py-combo-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.py-combo-row:last-child { border-bottom: none; }
+.pc-initial { font-weight: 700; color: var(--gold); font-size: 1rem; min-width: 32px; }
+.pc-finals { font-size: 0.8rem; color: var(--text-dim); }
+
+/* Tip section */
+.py-tip {
+  display: flex;
+  gap: 12px;
+  background: rgba(240, 192, 64, 0.08) !important;
+  border-color: rgba(240, 192, 64, 0.2) !important;
+}
+.py-tip-icon { font-size: 1.4rem; flex-shrink: 0; }
+.py-tip-content h3 { color: var(--gold); }
+
+/* Start exercises button */
+.py-start-exercises {
+  text-align: center;
+  padding: 16px 0;
+}
+.py-exercise-btn {
+  font-size: 1.05rem;
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #309060, #207040);
+  border-color: var(--green);
+}
+
+/* ========================================
+   PINYIN EXERCISES
+   ======================================== */
+.py-exercise-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.py-ex-progress { flex: 1; }
+.py-ex-bar {
+  height: 8px;
+  background: var(--bg-input);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.py-ex-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), #80e0a0);
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+.py-ex-count { font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; }
+.py-ex-score { font-weight: 700; color: var(--gold); font-size: 0.95rem; }
+
+.py-ex-prompt {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.py-ex-listen-area {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.py-ex-display { text-align: center; margin-bottom: 16px; }
+.py-ex-big-text { font-size: 2rem; font-weight: 700; color: var(--gold); margin-bottom: 8px; }
+.py-ex-hanzi { font-family: var(--font-zh); font-size: 4rem; font-weight: 700; color: var(--gold); text-shadow: 0 0 20px rgba(240, 192, 64, 0.3); }
+.py-ex-meaning { font-size: 1rem; color: var(--text-dim); margin-top: 8px; }
+.py-ex-question { font-size: 1.1rem; font-weight: 600; color: var(--text); }
+
+.py-ex-type-label {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+/* Tone buttons */
+.py-tone-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.py-tone-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  color: var(--text);
+  transition: all 0.2s;
+}
+.py-tone-btn:active { transform: scale(0.96); }
+.ptb-num { font-size: 0.75rem; color: var(--text-dim); }
+.ptb-mark { font-size: 1.8rem; font-weight: 700; color: var(--gold); }
+.ptb-shape { font-size: 1.2rem; color: var(--text-muted); }
+
+.py-btn-correct { border-color: var(--green) !important; background: rgba(80, 200, 120, 0.15) !important; }
+.py-btn-correct .ptb-mark { color: var(--green); }
+.py-btn-wrong { border-color: var(--red) !important; background: rgba(224, 80, 80, 0.15) !important; }
+.py-btn-wrong .ptb-mark { color: var(--red); }
+
+/* Combine exercise */
+.py-ex-combine { text-align: center; margin-bottom: 16px; }
+.py-combine-parts {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.py-combine-initial { color: var(--blue); }
+.py-combine-plus { color: var(--text-muted); }
+.py-combine-final { color: var(--purple); }
+.py-combine-eq { color: var(--text-muted); }
+.py-combine-result { color: var(--gold); }
+.py-combine-meaning { font-size: 0.9rem; color: var(--text-dim); }
+
+/* Exercise feedback */
+.py-ex-feedback {
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  margin-top: 12px;
+  text-align: center;
+  font-weight: 600;
+  animation: slideUp 0.3s ease;
+}
+.py-ex-feedback.feedback-correct { background: rgba(80, 200, 120, 0.15); border: 1px solid rgba(80, 200, 120, 0.3); color: var(--green); }
+.py-ex-feedback.feedback-wrong { background: rgba(224, 80, 80, 0.15); border: 1px solid rgba(224, 80, 80, 0.3); color: var(--red); }
+
+.py-ex-explanation {
+  padding: 10px 16px;
+  background: rgba(160, 112, 208, 0.1);
+  border: 1px solid rgba(160, 112, 208, 0.3);
+  border-radius: var(--radius-sm);
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: var(--purple);
+  text-align: center;
+  animation: slideUp 0.3s ease;
+}
+
+.py-retry-msg {
+  font-size: 0.9rem;
+  color: var(--red);
+  margin: 8px 0;
+}
+
+/* Input states */
+.input-correct { border-color: var(--green) !important; background: rgba(80, 200, 120, 0.1) !important; }
+.input-wrong { border-color: var(--red) !important; background: rgba(224, 80, 80, 0.1) !important; }
+
+/* Tone helper mini */
+.py-tone-helper-mini {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 8px;
+  padding: 6px 12px;
+  background: rgba(240, 192, 64, 0.06);
+  border-radius: var(--radius-sm);
+}
+
+/* ========================================
+   PINYIN TYPING QUIZ
+   ======================================== */
+.py-typing-prompt {
+  text-align: center;
+  padding: 20px 0;
+}
+.py-typing-hanzi {
+  font-family: var(--font-zh);
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-shadow: 0 0 20px rgba(240, 192, 64, 0.3);
+}
+.py-typing-meaning {
+  font-size: 1.1rem;
+  color: var(--text-dim);
+  margin: 8px 0;
+}
+
+.py-typing-feedback {
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  margin-top: 12px;
+  text-align: center;
+  animation: slideUp 0.3s ease;
+}
+.ptf-result { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+.ptf-correct { font-size: 0.9rem; color: var(--text-dim); font-family: var(--font), var(--font-zh); }
+
+/* ========================================
+   PINYIN KEYBOARD HELPER (floating)
+   ======================================== */
+.pinyin-helper-btn {
+  position: fixed;
+  bottom: calc(80px + var(--safe-bottom));
+  right: 12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #309060, #207040);
+  border: 2px solid rgba(80, 200, 120, 0.4);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: var(--font-zh);
+  cursor: pointer;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s;
+}
+.pinyin-helper-btn:active { transform: scale(0.9); }
+
+.pinyin-helper-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 8, 15, 0.9);
+  z-index: 1800;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.pinyin-helper-overlay.show { opacity: 1; pointer-events: auto; }
+
+.pinyin-helper-box {
+  background: var(--bg-card);
+  border: 2px solid var(--green);
+  border-radius: var(--radius);
+  padding: 20px;
+  width: 100%;
+  max-width: 420px;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+.ph-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.ph-header h3 { font-size: 1.1rem; margin: 0; }
+.ph-close {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.ph-section {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.ph-section:last-child { border-bottom: none; }
+.ph-section h4 { font-size: 0.85rem; color: var(--gold); margin-bottom: 8px; }
+
+.ph-tone-guide {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ph-tone-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+}
+.ph-mark { font-weight: 700; color: var(--gold); min-width: 80px; }
+.ph-hint { color: var(--text-dim); font-size: 0.75rem; }
+
+.ph-alt {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: rgba(240, 192, 64, 0.06);
+  border-radius: var(--radius-sm);
+}
+
+.ph-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.ph-item {
+  padding: 5px 10px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.ph-item:active { background: var(--bg-card-hover); border-color: var(--gold); }
+
+.ph-tones-ref {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.ph-tone-ref {
+  font-size: 0.8rem;
+  padding: 6px 10px;
+  background: var(--bg-input);
+  border-radius: 6px;
+  color: var(--text-dim);
+}
+
+/* Quiz type label for typing in endless */
+.quiz-type-label {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  text-align: center;
+  margin-bottom: 12px;
+}

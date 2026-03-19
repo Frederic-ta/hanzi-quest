@@ -8,6 +8,7 @@ const STORAGE_KEYS = {
   COMBAT: 'hq_combat',
   SKILL_TREE: 'hq_skill_tree',
   DAILY_LEARNING: 'hq_daily_learning',
+  PINYIN_PROGRESS: 'hq_pinyin_progress',
 };
 
 const Storage = {

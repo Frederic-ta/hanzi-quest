@@ -16,6 +16,9 @@ const App = {
     Audio.init();
     this.player = Storage.getPlayer();
 
+    // Initialize pinyin helper overlay
+    document.getElementById('pinyin-helper-container').innerHTML = Pinyin.renderHelper();
+
     // Update streak on app open
     const isNewDay = RPG.updateStreak(this.player);
     if (isNewDay && this.player.streak.current > 1) {
@@ -103,6 +106,7 @@ const App = {
       case 'write': this.renderWriteMenu(); break;
       case 'skills': this.renderSkillTree(); break;
       case 'profile': this.renderProfile(); break;
+      case 'pinyin': Pinyin.renderCourseOverview('screen-pinyin'); break;
     }
   },
 
@@ -435,6 +439,10 @@ const App = {
       </div>
 
       <div class="quick-actions">
+        <button class="action-btn action-pinyin" onclick="App.navigate('pinyin')">
+          <span class="action-icon">🗣️</span>
+          <span class="action-text">Pinyin</span>
+        </button>
         <button class="action-btn action-combat" onclick="App.navigate('world')">
           <span class="action-icon">⚔️</span>
           <span class="action-text">Combat</span>
@@ -965,6 +973,22 @@ const App = {
       </div>
 
       <div class="quiz-mode-section">
+        <h3>✍️ Pinyin</h3>
+        <div class="quick-mode-grid">
+          <button class="quiz-mode-card mode-pinyin" onclick="Pinyin.startTypingQuiz(10)" ${knownCount < 4 ? 'disabled' : ''}>
+            <div class="qm-icon">✍️</div>
+            <div class="qm-name">Pinyin (10)</div>
+            <div class="qm-desc">Tape le pinyin de chaque caractère</div>
+          </button>
+          <button class="quiz-mode-card mode-pinyin" onclick="Pinyin.startTypingQuiz(20)" ${knownCount < 4 ? 'disabled' : ''}>
+            <div class="qm-icon">🔤</div>
+            <div class="qm-name">Pinyin (20)</div>
+            <div class="qm-desc">20 caractères, tape le pinyin correct</div>
+          </button>
+        </div>
+      </div>
+
+      <div class="quiz-mode-section">
         <h3>🎯 Par type</h3>
         <div class="quiz-type-grid">
           ${Object.entries(Quiz.QUIZ_TYPES).map(([key, qt]) => `
@@ -1058,8 +1082,15 @@ const App = {
     const knownWords = HSK_DATA.filter(w => knownIds.includes(w.id));
     if (knownWords.length < 4) { this.renderQuizMenu(); return; }
 
-    const types = ['recognize', 'recall', 'listen', 'pinyin'];
+    const types = ['recognize', 'recall', 'listen', 'pinyin', 'typePinyin'];
     const type = types[Math.floor(Math.random() * types.length)];
+
+    // Pinyin typing round in endless mode
+    if (type === 'typePinyin') {
+      const word = knownWords[Math.floor(Math.random() * knownWords.length)];
+      this.renderEndlessPinyinTyping(word);
+      return;
+    }
     const word = knownWords[Math.floor(Math.random() * knownWords.length)];
     const pool = knownWords.length > 10 ? knownWords : HSK_DATA;
     const distractors = Quiz.getDistractors(word, pool, 3);
@@ -1171,6 +1202,81 @@ const App = {
 
       setTimeout(() => this.generateNextEndlessQuestion(), 3000);
     }
+  },
+
+  renderEndlessPinyinTyping(word) {
+    const el = document.getElementById('screen-quiz');
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+
+    el.innerHTML = `
+      <div class="endless-hud">
+        <div class="endless-stat"><span class="endless-icon">✅</span> ${this._endlessScore}</div>
+        <div class="endless-stat"><span class="endless-icon">📊</span> ${this._endlessTotal}</div>
+        <div class="endless-stat"><span class="endless-icon">🔥</span> ${this._endlessStreak}</div>
+        <button class="btn-rpg btn-small btn-secondary endless-stop" onclick="App.endEndlessMode()">Arrêter</button>
+      </div>
+      <div class="quiz-question-area">
+        <div class="quiz-type-label">✍️ Tape le pinyin</div>
+        <div class="py-typing-prompt">
+          <div class="py-typing-hanzi">${word.hanzi}</div>
+          <div class="py-typing-meaning">${word.meaning}</div>
+          <button class="btn-audio-small" onclick="Audio.speakChinese('${word.hanzi}')">🔊</button>
+        </div>
+        <div class="py-tone-helper-mini">💡 1=ā 2=á 3=ǎ 4=à — ou tape sans tons</div>
+        <div class="quiz-input-area">
+          <input type="text" id="endless-pinyin-input" class="quiz-input" placeholder="Écris le pinyin..." autocomplete="off" autocapitalize="off">
+          <button class="btn-rpg btn-submit" onclick="App.submitEndlessPinyin('${word.hanzi.replace(/'/g, "\\'")}', '${word.pinyin.replace(/'/g, "\\'")}', '${word.meaning.replace(/'/g, "\\'")}')">Valider</button>
+        </div>
+      </div>
+    `;
+
+    setTimeout(() => Audio.speakChinese(word.hanzi), 300);
+    setTimeout(() => {
+      const input = document.getElementById('endless-pinyin-input');
+      if (input) {
+        input.focus();
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            App.submitEndlessPinyin(word.hanzi, word.pinyin, word.meaning);
+          }
+        });
+      }
+    }, 100);
+  },
+
+  submitEndlessPinyin(hanzi, pinyin, meaning) {
+    const input = document.getElementById('endless-pinyin-input');
+    if (!input || !input.value.trim()) return;
+    if (input.disabled) return;
+
+    input.disabled = true;
+    this._endlessTotal++;
+    const userAnswer = input.value.trim();
+    const isCorrect = Pinyin.matchPinyin(userAnswer, pinyin);
+
+    if (isCorrect) {
+      this._endlessScore++;
+      this._endlessStreak++;
+      if (this._endlessStreak > this._endlessBestStreak) this._endlessBestStreak = this._endlessStreak;
+      Audio.playCorrect();
+      input.classList.add('input-correct');
+    } else {
+      this._endlessStreak = 0;
+      this._endlessWrong.push({ hanzi, pinyin, meaning });
+      Audio.playWrong();
+      input.classList.add('input-wrong');
+    }
+
+    const area = document.querySelector('.quiz-question-area');
+    area.insertAdjacentHTML('beforeend', `
+      <div class="py-typing-feedback ${isCorrect ? 'feedback-correct' : 'feedback-wrong'}">
+        <div class="ptf-result">${isCorrect ? '✅ Correct !' : '❌ Incorrect'}</div>
+        <div class="ptf-correct">${hanzi} — <strong>${pinyin}</strong> — ${meaning}</div>
+      </div>
+    `);
+
+    setTimeout(() => this.generateNextEndlessQuestion(), isCorrect ? 800 : 2500);
   },
 
   endEndlessMode() {

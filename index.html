@@ -53,6 +53,7 @@
   <div id="screen-review" class="screen"></div>
   <div id="screen-recap" class="screen"></div>
   <div id="screen-word-detail" class="screen"></div>
+  <div id="screen-pinyin" class="screen"></div>
 
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
@@ -78,6 +79,12 @@
     </button>
   </nav>
 
+  <!-- Pinyin Helper Floating Button -->
+  <button id="pinyin-helper-btn" class="pinyin-helper-btn" onclick="Pinyin.toggleHelper()">拼</button>
+
+  <!-- Pinyin Helper Overlay (rendered by Pinyin.renderHelper()) -->
+  <div id="pinyin-helper-container"></div>
+
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
   <script src="js/data.js"></script>
@@ -90,6 +97,7 @@
   <script src="js/world.js"></script>
   <script src="js/combat.js"></script>
   <script src="js/skilltree.js"></script>
+  <script src="js/pinyin.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
