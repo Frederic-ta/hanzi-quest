@@ -706,10 +706,23 @@ const Combat = {
   },
 
   exitCombat() {
-    document.querySelector('.bottom-nav').style.display = 'flex';
-    if (this.onCombatEnd) {
-      this.onCombatEnd(this.phase === 'victory');
-    } else {
+    try {
+      document.querySelector('.bottom-nav').style.display = 'flex';
+      // Reset combat state
+      this.active = false;
+      this.stopTimer();
+      if (this.onCombatEnd) {
+        const callback = this.onCombatEnd;
+        const won = this.phase === 'victory';
+        this.onCombatEnd = null; // prevent double-call
+        callback(won);
+      } else {
+        App.navigate('home');
+      }
+    } catch (e) {
+      console.error('exitCombat error:', e);
+      // Fallback: force navigate home
+      document.querySelector('.bottom-nav').style.display = 'flex';
       App.navigate('home');
     }
   },
