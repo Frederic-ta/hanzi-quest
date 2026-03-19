@@ -4,13 +4,13 @@ const REGIONS = [
   {
     id: 'village',
     name: 'Village des Premiers Pas',
-    nameZh: '初步村',
+    nameZh: '初步村', namePinyin: 'Chūbù Cūn',
     hskRange: [1],
     categories: ['salutations', 'pronoms', 'nombres'],
     color: '#50c878',
     bgGradient: 'radial-gradient(ellipse at 50% 30%, rgba(80,200,120,0.12) 0%, transparent 60%)',
     icon: '🏘️',
-    description: 'Un village paisible niché dans la vallée de 龙界. Les habitants parlent doucement et accueillent les voyageurs avec bienveillance.',
+    description: 'Un village paisible niché dans la vallée de 龙界 (Lóngjiè). Les habitants parlent doucement et accueillent les voyageurs avec bienveillance.',
     unlockLevel: 1,
     npcs: [
       { name: '老王 (Lǎo Wáng)', role: 'Chef du village', icon: '👴',
@@ -29,15 +29,15 @@ const REGIONS = [
       }
     ],
     enemies: [
-      { name: 'Ombre Errante', nameZh: '游影', icon: '👻', hp: 40, attack: 8, xp: 30, isBoss: false,
+      { name: 'Ombre Errante', nameZh: '游影', namePinyin: 'Yóu Yǐng', icon: '👻', hp: 40, attack: 8, xp: 30, isBoss: false,
         dialogue: 'Grrr... Tu ne connais même pas les salutations !' },
-      { name: 'Rat des Ruines', nameZh: '废鼠', icon: '🐀', hp: 30, attack: 6, xp: 20, isBoss: false,
+      { name: 'Rat des Ruines', nameZh: '废鼠', namePinyin: 'Fèi Shǔ', icon: '🐀', hp: 30, attack: 6, xp: 20, isBoss: false,
         dialogue: 'Squiik ! Essaie de me frapper avec tes mots !' },
-      { name: 'Esprit de Pierre', nameZh: '石灵', icon: '🗿', hp: 50, attack: 10, xp: 40, isBoss: false,
+      { name: 'Esprit de Pierre', nameZh: '石灵', namePinyin: 'Shí Líng', icon: '🗿', hp: 50, attack: 10, xp: 40, isBoss: false,
         dialogue: 'Je suis ici depuis mille ans... prouve ta valeur.' },
     ],
     boss: {
-      name: 'Gardien de Jade', nameZh: '玉守护者', icon: '🐲',
+      name: 'Gardien de Jade', nameZh: '玉守护者', namePinyin: 'Yù Shǒuhùzhě', icon: '🐲',
       hp: 120, attack: 15, xp: 200,
       dialogue: [
         'Je suis le Gardien de Jade, protecteur du Village !',
@@ -50,7 +50,7 @@ const REGIONS = [
   {
     id: 'forest',
     name: 'Forêt des Murmures',
-    nameZh: '低语林',
+    nameZh: '低语林', namePinyin: 'Dīyǔ Lín',
     hskRange: [1, 2],
     categories: ['famille', 'nourriture', 'temps', 'nature', 'animaux'],
     color: '#2d8f5e',
@@ -68,15 +68,15 @@ const REGIONS = [
       }
     ],
     enemies: [
-      { name: 'Spectre Sylvestre', nameZh: '林鬼', icon: '🌿', hp: 55, attack: 12, xp: 45, isBoss: false,
+      { name: 'Spectre Sylvestre', nameZh: '林鬼', namePinyin: 'Lín Guǐ', icon: '🌿', hp: 55, attack: 12, xp: 45, isBoss: false,
         dialogue: 'La forêt me protège... pas toi.' },
-      { name: 'Loup de Brume', nameZh: '雾狼', icon: '🐺', hp: 65, attack: 14, xp: 50, isBoss: false,
+      { name: 'Loup de Brume', nameZh: '雾狼', namePinyin: 'Wù Láng', icon: '🐺', hp: 65, attack: 14, xp: 50, isBoss: false,
         dialogue: 'Awoooo ! Tes mots sont faibles !' },
-      { name: 'Araignée Ancienne', nameZh: '古蛛', icon: '🕷️', hp: 45, attack: 16, xp: 40, isBoss: false,
+      { name: 'Araignée Ancienne', nameZh: '古蛛', namePinyin: 'Gǔ Zhū', icon: '🕷️', hp: 45, attack: 16, xp: 40, isBoss: false,
         dialogue: 'Ma toile est tissée de silence...' },
     ],
     boss: {
-      name: 'Roi des Murmures', nameZh: '低语之王', icon: '🦉',
+      name: 'Roi des Murmures', nameZh: '低语之王', namePinyin: 'Dīyǔ zhī Wáng', icon: '🦉',
       hp: 180, attack: 20, xp: 350,
       dialogue: [
         'Qui ose troubler le silence de ma forêt ?',
@@ -89,7 +89,7 @@ const REGIONS = [
   {
     id: 'market',
     name: 'Marché des Mille Voix',
-    nameZh: '千声市场',
+    nameZh: '千声市场', namePinyin: 'Qiānshēng Shìchǎng',
     hskRange: [2],
     categories: ['verbes', 'objets', 'lieux'],
     color: '#e0a040',
@@ -107,15 +107,15 @@ const REGIONS = [
       }
     ],
     enemies: [
-      { name: 'Voleur de Mots', nameZh: '词贼', icon: '🥷', hp: 70, attack: 18, xp: 60, isBoss: false,
+      { name: 'Voleur de Mots', nameZh: '词贼', namePinyin: 'Cí Zéi', icon: '🥷', hp: 70, attack: 18, xp: 60, isBoss: false,
         dialogue: 'Je vais voler tes mots et les vendre !' },
-      { name: 'Marchand Fantôme', nameZh: '幽商', icon: '👤', hp: 80, attack: 16, xp: 65, isBoss: false,
+      { name: 'Marchand Fantôme', nameZh: '幽商', namePinyin: 'Yōu Shāng', icon: '👤', hp: 80, attack: 16, xp: 65, isBoss: false,
         dialogue: 'Achète ou combats, c\'est ton choix...' },
-      { name: 'Golem de Monnaie', nameZh: '钱傀', icon: '🤖', hp: 90, attack: 20, xp: 70, isBoss: false,
+      { name: 'Golem de Monnaie', nameZh: '钱傀', namePinyin: 'Qián Kuǐ', icon: '🤖', hp: 90, attack: 20, xp: 70, isBoss: false,
         dialogue: 'CLANG CLANG ! Le prix est ta défaite !' },
     ],
     boss: {
-      name: 'Empereur du Commerce', nameZh: '商帝', icon: '👑',
+      name: 'Empereur du Commerce', nameZh: '商帝', namePinyin: 'Shāng Dì', icon: '👑',
       hp: 250, attack: 25, xp: 500,
       dialogue: [
         'Ha ha ha ! Personne ne quitte mon marché sans payer !',
@@ -128,7 +128,7 @@ const REGIONS = [
   {
     id: 'temple',
     name: 'Temple de la Montagne',
-    nameZh: '山寺',
+    nameZh: '山寺', namePinyin: 'Shān Sì',
     hskRange: [2, 3],
     categories: ['adjectifs', 'outils', 'metiers', 'corps'],
     color: '#a070d0',
@@ -146,15 +146,15 @@ const REGIONS = [
       }
     ],
     enemies: [
-      { name: 'Moine Corrompu', nameZh: '堕僧', icon: '😈', hp: 100, attack: 22, xp: 80, isBoss: false,
+      { name: 'Moine Corrompu', nameZh: '堕僧', namePinyin: 'Duò Sēng', icon: '😈', hp: 100, attack: 22, xp: 80, isBoss: false,
         dialogue: 'La corruption m\'a donné le pouvoir !' },
-      { name: 'Tigre de Montagne', nameZh: '山虎', icon: '🐅', hp: 120, attack: 26, xp: 90, isBoss: false,
+      { name: 'Tigre de Montagne', nameZh: '山虎', namePinyin: 'Shān Hǔ', icon: '🐅', hp: 120, attack: 26, xp: 90, isBoss: false,
         dialogue: 'GRAAAH ! Seul le plus fort survit !' },
-      { name: 'Esprit du Vent', nameZh: '风灵', icon: '🌪️', hp: 85, attack: 30, xp: 85, isBoss: false,
+      { name: 'Esprit du Vent', nameZh: '风灵', namePinyin: 'Fēng Líng', icon: '🌪️', hp: 85, attack: 30, xp: 85, isBoss: false,
         dialogue: 'Tu ne peux pas frapper le vent...' },
     ],
     boss: {
-      name: 'Gardien du Savoir', nameZh: '知识守卫', icon: '🐯',
+      name: 'Gardien du Savoir', nameZh: '知识守卫', namePinyin: 'Zhīshi Shǒuwèi', icon: '🐯',
       hp: 350, attack: 32, xp: 750,
       dialogue: [
         'Je garde ce temple depuis des siècles.',
@@ -167,7 +167,7 @@ const REGIONS = [
   {
     id: 'palace',
     name: 'Palais du Dragon',
-    nameZh: '龙宫',
+    nameZh: '龙宫', namePinyin: 'Lóng Gōng',
     hskRange: [3],
     categories: ['verbes', 'adjectifs', 'outils', 'lieux', 'nature', 'animaux', 'corps'],
     color: '#e05050',
@@ -180,27 +180,27 @@ const REGIONS = [
         dialogue: [
           'Le Dragon Empereur t\'attend dans la salle du trône.',
           'Tu as traversé bien des épreuves pour arriver ici.',
-          'Le combat final déterminera le destin de 龙界.'
+          'Le combat final déterminera le destin de 龙界 (Lóngjiè).'
         ]
       }
     ],
     enemies: [
-      { name: 'Garde Impérial', nameZh: '皇卫', icon: '⚔️', hp: 140, attack: 35, xp: 100, isBoss: false,
+      { name: 'Garde Impérial', nameZh: '皇卫', namePinyin: 'Huáng Wèi', icon: '⚔️', hp: 140, attack: 35, xp: 100, isBoss: false,
         dialogue: 'Aucun intrus ne passera !' },
-      { name: 'Dragon Mineur', nameZh: '小龙', icon: '🐲', hp: 160, attack: 38, xp: 120, isBoss: false,
+      { name: 'Dragon Mineur', nameZh: '小龙', namePinyin: 'Xiǎo Lóng', icon: '🐲', hp: 160, attack: 38, xp: 120, isBoss: false,
         dialogue: 'Je suis le plus petit des dragons, mais ne me sous-estime pas !' },
-      { name: 'Phénix Sombre', nameZh: '暗凤', icon: '🔥', hp: 150, attack: 40, xp: 110, isBoss: false,
+      { name: 'Phénix Sombre', nameZh: '暗凤', namePinyin: 'Àn Fèng', icon: '🔥', hp: 150, attack: 40, xp: 110, isBoss: false,
         dialogue: 'Je renais de mes cendres... encore et encore !' },
     ],
     boss: {
-      name: 'Dragon Empereur', nameZh: '龙帝', icon: '🐉',
+      name: 'Dragon Empereur', nameZh: '龙帝', namePinyin: 'Lóng Dì', icon: '🐉',
       hp: 500, attack: 45, xp: 1500,
       dialogue: [
         'MORTEL ! Tu oses pénétrer dans MON palais ?!',
-        'Je suis le Dragon Empereur, maître de 龙界 !',
+        'Je suis le Dragon Empereur, maître de 龙界 (Lóngjiè) !',
         'Montre-moi que tu mérites de restaurer la langue ancienne !'
       ],
-      defeatDialogue: 'Incroyable... Tu as restauré l\'équilibre de 龙界.\nTu es désormais un véritable Maître Dragon. 恭喜你！'
+      defeatDialogue: 'Incroyable... Tu as restauré l\'équilibre de 龙界 (Lóngjiè).\nTu es désormais un véritable Maître Dragon. 恭喜你 (gōngxǐ nǐ) ！'
     }
   }
 ];

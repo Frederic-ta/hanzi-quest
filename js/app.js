@@ -494,7 +494,7 @@ const App = {
 
     el.innerHTML = `
       <div class="screen-header">
-        <h2>🗺️ 龙界 — Le Royaume du Dragon</h2>
+        <h2>🗺️ 龙界 (Lóngjiè) — Le Royaume du Dragon</h2>
         <p class="subtitle">Explore les régions et combats les gardiens</p>
       </div>
       <div class="world-map">
@@ -539,7 +539,7 @@ const App = {
       <div class="screen-header">
         <button class="back-btn" onclick="App.renderWorldMap()">← Carte</button>
         <h2>${region.icon} ${region.name}</h2>
-        <div class="subtitle">${region.nameZh}</div>
+        <div class="subtitle">${region.nameZh} (${region.namePinyin || ''})</div>
       </div>
 
       <div class="region-description" style="--region-color: ${region.color}">

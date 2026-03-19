@@ -550,7 +550,7 @@ const Combat = {
         <div class="combat-enemy-intro">
           <div class="enemy-intro-icon">${this.enemy.icon}</div>
           <div class="enemy-intro-name">${this.enemy.name}</div>
-          <div class="enemy-intro-namezh">${this.enemy.nameZh || ''}</div>
+          <div class="enemy-intro-namezh">${this.enemy.nameZh || ''}${this.enemy.namePinyin ? ' (' + this.enemy.namePinyin + ')' : ''}</div>
           <div class="enemy-intro-dialogue">"${Array.isArray(this.enemy.dialogue) ? this.enemy.dialogue[0] : this.enemy.dialogue}"</div>
         </div>
         <button class="btn-rpg combat-start-btn" onclick="Combat.beginFight()">Combattre !</button>
