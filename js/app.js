@@ -1310,6 +1310,7 @@ const App = {
           <div id="writing-char-info" class="writing-char-info"></div>
           <div id="writing-progress" class="writing-progress"></div>
         </div>
+        <div id="writing-word-context"></div>
         <div id="hanzi-writer-container" class="hanzi-writer-box"></div>
         <div id="writing-result" class="writing-result"></div>
       </div>
@@ -1350,7 +1351,11 @@ const App = {
 
     updateCharInfo(0);
 
+    Writing._practiceWords = words;
     Writing.startPractice(chars, 'hanzi-writer-container', (summary) => {
+      // Clear word context
+      const ctxEl = document.getElementById('writing-word-context');
+      if (ctxEl) ctxEl.innerHTML = '';
       // Update write mastery for practiced words
       words.forEach(w => {
         const ws = Storage.getWordState(w.id);

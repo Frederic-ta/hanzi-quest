@@ -102,35 +102,82 @@ const Writing = {
     }
   },
 
-  // Start a writing practice session with multiple chars
-  startPractice(chars, containerId, onFinish) {
-    this.charQueue = chars;
+  // Start a writing practice session with multiple words (writes ALL chars per word)
+  startPractice(chars, containerId, onFinish, words = null) {
+    // Check for words set externally (workaround for inline callbacks)
+    if (!words && this._practiceWords) {
+      words = this._practiceWords;
+      this._practiceWords = null;
+    }
+    // If words provided, build a queue of {char, wordHanzi, wordPinyin, wordMeaning} for context
+    this.wordQueue = [];
+    if (words && words.length > 0) {
+      words.forEach(w => {
+        const wordChars = [...w.hanzi];
+        wordChars.forEach((c, i) => {
+          this.wordQueue.push({
+            char: c,
+            wordHanzi: w.hanzi,
+            wordPinyin: w.pinyin,
+            wordMeaning: w.meaning,
+            charIndex: i,
+            totalChars: wordChars.length,
+          });
+        });
+      });
+    } else {
+      // Fallback: just single chars
+      this.wordQueue = chars.map(c => ({ char: c, wordHanzi: c, wordPinyin: '', wordMeaning: '', charIndex: 0, totalChars: 1 }));
+    }
+
     this.currentIndex = 0;
     this.quizResults = [];
     this.onComplete = onFinish;
+    this.charQueue = this.wordQueue.map(q => q.char);
     this.practiceNextChar(containerId);
   },
 
   practiceNextChar(containerId) {
-    if (this.currentIndex >= this.charQueue.length) {
-      // Session complete
+    if (this.currentIndex >= this.wordQueue.length) {
       this.finishPractice();
       return;
     }
 
-    const char = this.charQueue[this.currentIndex];
+    const entry = this.wordQueue[this.currentIndex];
     this.currentIndex++;
 
     // Update progress display
     const progressEl = document.getElementById('writing-progress');
     if (progressEl) {
-      progressEl.textContent = `${this.currentIndex} / ${this.charQueue.length}`;
+      progressEl.textContent = `${this.currentIndex} / ${this.wordQueue.length}`;
     }
 
-    this.showQuizMode(char, containerId,
+    // Show word context (which char we're writing in the word)
+    const contextEl = document.getElementById('writing-word-context');
+    if (contextEl && entry.totalChars > 1) {
+      const highlighted = [...entry.wordHanzi].map((c, i) => 
+        i === entry.charIndex 
+          ? `<span style="color:var(--gold);font-size:1.3em;font-weight:bold;">${c}</span>` 
+          : `<span style="opacity:0.4;">${c}</span>`
+      ).join('');
+      contextEl.innerHTML = `
+        <div style="text-align:center;margin-bottom:8px;">
+          <div style="font-size:24px;">${highlighted}</div>
+          <div style="font-size:14px;color:var(--text-secondary);">${entry.wordPinyin} — ${entry.wordMeaning}</div>
+          <div style="font-size:12px;color:var(--text-muted);">Caractère ${entry.charIndex + 1}/${entry.totalChars}</div>
+        </div>
+      `;
+    } else if (contextEl) {
+      contextEl.innerHTML = `
+        <div style="text-align:center;margin-bottom:8px;">
+          <div style="font-size:14px;color:var(--text-secondary);">${entry.wordPinyin} — ${entry.wordMeaning}</div>
+        </div>
+      `;
+    }
+
+    this.showQuizMode(entry.char, containerId,
       null, null,
       (result) => {
-        // Auto advance after a short delay
         setTimeout(() => this.practiceNextChar(containerId), 800);
       }
     );
