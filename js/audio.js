@@ -24,14 +24,21 @@ const Audio = {
   // Speak Chinese text
   speakChinese(text, rate = 0.8) {
     if (!Storage.getSettings().soundEnabled) return;
+    // Reload voices if empty (mobile quirk)
+    if (this._voices.length === 0) {
+      this._voices = this.synth.getVoices();
+    }
     this.synth.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'zh-CN';
     utterance.rate = rate;
     utterance.pitch = 1;
+    utterance.volume = 1;
 
-    // Try to find a Chinese voice
-    const zhVoice = this._voices.find(v => v.lang.startsWith('zh'));
+    // Try to find a Chinese voice (try multiple lang codes)
+    const zhVoice = this._voices.find(v => v.lang === 'zh-CN') 
+      || this._voices.find(v => v.lang.startsWith('zh'))
+      || this._voices.find(v => v.lang.includes('CN') || v.lang.includes('Chinese'));
     if (zhVoice) utterance.voice = zhVoice;
 
     this.synth.speak(utterance);
@@ -80,15 +87,15 @@ const Audio = {
 
   // Correct answer sound
   playCorrect() {
-    this.playTone(523, 0.1, 'sine', 0.2);
-    setTimeout(() => this.playTone(659, 0.1, 'sine', 0.2), 100);
-    setTimeout(() => this.playTone(784, 0.15, 'sine', 0.2), 200);
+    this.playTone(523, 0.15, 'sine', 0.5);
+    setTimeout(() => this.playTone(659, 0.15, 'sine', 0.5), 120);
+    setTimeout(() => this.playTone(784, 0.2, 'sine', 0.5), 240);
   },
 
   // Wrong answer sound
   playWrong() {
-    this.playTone(200, 0.15, 'sawtooth', 0.15);
-    setTimeout(() => this.playTone(150, 0.2, 'sawtooth', 0.15), 150);
+    this.playTone(200, 0.2, 'sawtooth', 0.4);
+    setTimeout(() => this.playTone(150, 0.25, 'sawtooth', 0.4), 180);
   },
 
   // Level up fanfare
@@ -127,7 +134,7 @@ const Audio = {
 
   // Button click
   playClick() {
-    this.playTone(600, 0.05, 'sine', 0.1);
+    this.playTone(600, 0.08, 'sine', 0.3);
   },
 
   // Stroke correct

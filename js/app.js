@@ -453,6 +453,10 @@ const App = {
         <span class="daily-words-count">Mots appris aujourd'hui : ${daily.newWordsCount}/20</span>
       </div>
 
+      <div class="sound-test" style="text-align:center;margin:8px 0;">
+        <button class="btn-rpg btn-secondary" style="font-size:14px;padding:8px 16px;" onclick="Audio.playCorrect(); setTimeout(() => Audio.speakChinese('你好'), 500);">🔊 Tester le son</button>
+      </div>
+
       <div class="quests-section">
         <h2 class="section-title">Quêtes du jour</h2>
         <div class="quests-list">
