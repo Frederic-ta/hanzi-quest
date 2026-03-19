@@ -929,20 +929,52 @@ const App = {
   // ============================================================
   renderQuizMenu() {
     this._quizEndCallback = null;
+    this._endlessMode = false;
     const el = document.getElementById('screen-quiz');
+
+    // Count known words
+    const progress = Storage.getWordProgress();
+    const knownCount = Object.values(progress).filter(p => p.seen).length;
+
     el.innerHTML = `
       <div class="screen-header">
-        <h2>⚔️ Quiz Combat</h2>
-        <p class="subtitle">Choisis ton combat</p>
+        <h2>⚔️ Quiz</h2>
+        <p class="subtitle">Entraîne-toi sur les mots que tu connais</p>
       </div>
-      <div class="quiz-type-grid">
-        ${Object.entries(Quiz.QUIZ_TYPES).map(([key, qt]) => `
-          <button class="quiz-type-card" onclick="App.startQuiz('${key}')">
-            <div class="qt-icon">${qt.icon}</div>
-            <div class="qt-name">${qt.name}</div>
-            <div class="qt-desc">${qt.description}</div>
+
+      <div class="quiz-mode-section">
+        <h3>🔥 Modes rapides</h3>
+        <div class="quick-mode-grid">
+          <button class="quiz-mode-card mode-series" onclick="App.startSeriesMode(10)" ${knownCount < 4 ? 'disabled' : ''}>
+            <div class="qm-icon">⚡</div>
+            <div class="qm-name">Série de 10</div>
+            <div class="qm-desc">10 questions aléatoires, tous types mélangés</div>
           </button>
-        `).join('')}
+          <button class="quiz-mode-card mode-series" onclick="App.startSeriesMode(20)" ${knownCount < 4 ? 'disabled' : ''}>
+            <div class="qm-icon">🔥</div>
+            <div class="qm-name">Série de 20</div>
+            <div class="qm-desc">20 questions pour s'échauffer</div>
+          </button>
+          <button class="quiz-mode-card mode-endless" onclick="App.startEndlessMode()" ${knownCount < 4 ? 'disabled' : ''}>
+            <div class="qm-icon">♾️</div>
+            <div class="qm-name">Mode sans fin</div>
+            <div class="qm-desc">Enchaîne jusqu'à ce que tu veuilles arrêter</div>
+          </button>
+        </div>
+        ${knownCount < 4 ? '<p class="mode-locked">📖 Apprends au moins 4 mots pour débloquer les quiz !</p>' : ''}
+      </div>
+
+      <div class="quiz-mode-section">
+        <h3>🎯 Par type</h3>
+        <div class="quiz-type-grid">
+          ${Object.entries(Quiz.QUIZ_TYPES).map(([key, qt]) => `
+            <button class="quiz-type-card" onclick="App.startQuiz('${key}')">
+              <div class="qt-icon">${qt.icon}</div>
+              <div class="qt-name">${qt.name}</div>
+              <div class="qt-desc">${qt.description}</div>
+            </button>
+          `).join('')}
+        </div>
       </div>
 
       <div class="quiz-options">
@@ -965,6 +997,226 @@ const App = {
         </div>
       </div>
     `;
+  },
+
+  // Series mode: N random questions, all types mixed, from known words only
+  startSeriesMode(count) {
+    const progress = Storage.getWordProgress();
+    const knownIds = Object.entries(progress).filter(([id, p]) => p.seen).map(([id]) => parseInt(id));
+    const knownWords = HSK_DATA.filter(w => knownIds.includes(w.id));
+
+    if (knownWords.length < 4) {
+      UI.showToast('Apprends plus de mots d\'abord !', 'error');
+      return;
+    }
+
+    // Generate mixed type questions from known words
+    const types = Object.keys(Quiz.QUIZ_TYPES);
+    const questions = [];
+
+    for (let i = 0; i < count; i++) {
+      const type = types[Math.floor(Math.random() * types.length)];
+      const word = knownWords[Math.floor(Math.random() * knownWords.length)];
+      const distractors = Quiz.getDistractors(word, knownWords.length > 10 ? knownWords : HSK_DATA, 3);
+
+      let q;
+      if (type === 'meaningToChar' || type === 'recall') {
+        q = { type, word, question: word.meaning, answer: word.hanzi, options: Quiz.shuffle([word.hanzi, ...distractors.map(d => d.hanzi)]) };
+      } else if (type === 'listenToMeaning' || type === 'listen') {
+        q = { type: 'listen', word, question: word.hanzi, answer: word.meaning, options: Quiz.shuffle([word.meaning, ...distractors.map(d => d.meaning)]), isListening: true };
+      } else if (type === 'pinyinToChar' || type === 'pinyin') {
+        q = { type: 'pinyin', word, question: word.pinyin, answer: word.hanzi, options: Quiz.shuffle([word.hanzi, ...distractors.map(d => d.hanzi)]) };
+      } else {
+        // Default: charToMeaning
+        q = { type: 'recognize', word, question: word.hanzi, answer: word.meaning, options: Quiz.shuffle([word.meaning, ...distractors.map(d => d.meaning)]) };
+      }
+      questions.push(q);
+    }
+
+    Quiz.questions = questions;
+    Quiz.currentIndex = 0;
+    Quiz.score = 0;
+    Quiz.wrongAnswers = [];
+    this._endlessMode = false;
+    this.renderQuizQuestion();
+  },
+
+  // Endless mode: keeps generating questions until player stops
+  startEndlessMode() {
+    this._endlessMode = true;
+    this._endlessScore = 0;
+    this._endlessStreak = 0;
+    this._endlessBestStreak = 0;
+    this._endlessTotal = 0;
+    this._endlessWrong = [];
+    this.generateNextEndlessQuestion();
+  },
+
+  generateNextEndlessQuestion() {
+    const progress = Storage.getWordProgress();
+    const knownIds = Object.entries(progress).filter(([id, p]) => p.seen).map(([id]) => parseInt(id));
+    const knownWords = HSK_DATA.filter(w => knownIds.includes(w.id));
+    if (knownWords.length < 4) { this.renderQuizMenu(); return; }
+
+    const types = ['recognize', 'recall', 'listen', 'pinyin'];
+    const type = types[Math.floor(Math.random() * types.length)];
+    const word = knownWords[Math.floor(Math.random() * knownWords.length)];
+    const pool = knownWords.length > 10 ? knownWords : HSK_DATA;
+    const distractors = Quiz.getDistractors(word, pool, 3);
+
+    let options, answer, questionText, isListening = false;
+    if (type === 'recall') {
+      questionText = word.meaning;
+      answer = word.hanzi;
+      options = Quiz.shuffle([word.hanzi, ...distractors.map(d => d.hanzi)]);
+    } else if (type === 'listen') {
+      questionText = word.hanzi;
+      answer = word.meaning;
+      options = Quiz.shuffle([word.meaning, ...distractors.map(d => d.meaning)]);
+      isListening = true;
+    } else if (type === 'pinyin') {
+      questionText = word.pinyin;
+      answer = word.hanzi;
+      options = Quiz.shuffle([word.hanzi, ...distractors.map(d => d.hanzi)]);
+    } else {
+      questionText = word.hanzi;
+      answer = word.meaning;
+      options = Quiz.shuffle([word.meaning, ...distractors.map(d => d.meaning)]);
+    }
+
+    this.renderEndlessQuestion(type, word, questionText, answer, options, isListening);
+  },
+
+  renderEndlessQuestion(type, word, questionText, answer, options, isListening) {
+    const el = document.getElementById('screen-quiz');
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+
+    const typeLabels = { recognize: '📖 Quel est le sens ?', recall: '🔄 Quel caractère ?', listen: '👂 Écoute et choisis', pinyin: '📝 Quel caractère ?' };
+
+    el.innerHTML = `
+      <div class="endless-hud">
+        <div class="endless-stat"><span class="endless-icon">✅</span> ${this._endlessScore}</div>
+        <div class="endless-stat"><span class="endless-icon">📊</span> ${this._endlessTotal}</div>
+        <div class="endless-stat"><span class="endless-icon">🔥</span> ${this._endlessStreak}</div>
+        <button class="btn-rpg btn-small btn-secondary endless-stop" onclick="App.endEndlessMode()">Arrêter</button>
+      </div>
+
+      <div class="quiz-question-area">
+        <div class="quiz-type-label">${typeLabels[type] || '📖'}</div>
+        <div class="quiz-question ${isListening ? 'listening' : ''}">
+          ${isListening ? `<button class="btn-listen-big" onclick="Audio.speakChinese('${word.hanzi}')">🔊 Écouter</button>` : `<span class="q-text">${questionText}</span>`}
+        </div>
+        ${type === 'recognize' || type === 'listen' ? `<div class="quiz-pinyin">${word.pinyin}</div>` : ''}
+        <div class="quiz-options">
+          ${options.map((opt, i) => `
+            <button class="quiz-option" onclick="App.answerEndless('${opt.replace(/'/g, "\\'")}', '${answer.replace(/'/g, "\\'")}', '${word.hanzi}', '${word.pinyin}', '${word.meaning.replace(/'/g, "\\'")}')">
+              <span class="opt-letter">${['A','B','C','D'][i]}</span>
+              <span class="opt-text">${opt}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    if (isListening) {
+      setTimeout(() => Audio.speakChinese(word.hanzi), 300);
+    }
+  },
+
+  answerEndless(selected, correct, hanzi, pinyin, meaning) {
+    this._endlessTotal++;
+    const isCorrect = selected === correct;
+    const el = document.getElementById('screen-quiz');
+
+    if (isCorrect) {
+      this._endlessScore++;
+      this._endlessStreak++;
+      if (this._endlessStreak > this._endlessBestStreak) this._endlessBestStreak = this._endlessStreak;
+      Audio.playCorrect();
+
+      // Brief green flash then next question
+      const opts = el.querySelectorAll('.quiz-option');
+      opts.forEach(o => {
+        if (o.textContent.includes(correct)) o.classList.add('correct-flash');
+        o.style.pointerEvents = 'none';
+      });
+      setTimeout(() => this.generateNextEndlessQuestion(), 600);
+    } else {
+      this._endlessStreak = 0;
+      this._endlessWrong.push({ hanzi, pinyin, meaning });
+      Audio.playWrong();
+
+      // Show correct answer for 3 seconds
+      const opts = el.querySelectorAll('.quiz-option');
+      opts.forEach(o => {
+        o.style.pointerEvents = 'none';
+        if (o.textContent.includes(correct)) o.classList.add('correct-flash');
+        if (o.textContent.includes(selected)) o.classList.add('wrong-flash');
+      });
+
+      // Show feedback
+      const feedbackDiv = document.createElement('div');
+      feedbackDiv.className = 'endless-feedback';
+      feedbackDiv.innerHTML = `
+        <div class="feedback-wrong">
+          <div class="feedback-char">${hanzi}</div>
+          <div class="feedback-pinyin">${pinyin}</div>
+          <div class="feedback-meaning">${meaning}</div>
+          <button class="btn-audio-small" onclick="Audio.speakChinese('${hanzi}')">🔊</button>
+        </div>
+      `;
+      el.querySelector('.quiz-question-area').appendChild(feedbackDiv);
+      Audio.speakChinese(hanzi);
+
+      setTimeout(() => this.generateNextEndlessQuestion(), 3000);
+    }
+  },
+
+  endEndlessMode() {
+    const el = document.getElementById('screen-quiz');
+    const pct = this._endlessTotal > 0 ? Math.round((this._endlessScore / this._endlessTotal) * 100) : 0;
+
+    // Award XP
+    const player = Storage.getPlayer();
+    const xp = this._endlessScore * 8;
+    const result = RPG.awardXP(player, xp);
+
+    el.innerHTML = `
+      <div class="endless-results">
+        <h2>♾️ Mode sans fin — Résultats</h2>
+        <div class="endless-stats-grid">
+          <div class="es-card"><div class="es-val">${this._endlessTotal}</div><div class="es-label">Questions</div></div>
+          <div class="es-card"><div class="es-val">${this._endlessScore}</div><div class="es-label">Correctes</div></div>
+          <div class="es-card"><div class="es-val">${pct}%</div><div class="es-label">Précision</div></div>
+          <div class="es-card"><div class="es-val">${this._endlessBestStreak}🔥</div><div class="es-label">Meilleur combo</div></div>
+        </div>
+        <div class="es-xp">+${xp} XP gagnés !</div>
+        ${this._endlessWrong.length > 0 ? `
+          <div class="es-wrong-section">
+            <h3>Mots à revoir (${this._endlessWrong.length})</h3>
+            <div class="es-wrong-list">
+              ${this._endlessWrong.map(w => `
+                <div class="es-wrong-item">
+                  <span class="ewi-char">${w.hanzi}</span>
+                  <span class="ewi-pinyin">${w.pinyin}</span>
+                  <span class="ewi-meaning">${w.meaning}</span>
+                  <button class="btn-audio-tiny" onclick="Audio.speakChinese('${w.hanzi}')">🔊</button>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : '<div class="es-perfect">🎉 Aucune erreur ! Parfait !</div>'}
+        <div class="es-actions">
+          <button class="btn-rpg" onclick="App.startEndlessMode()">♾️ Encore !</button>
+          <button class="btn-rpg btn-secondary" onclick="App.renderQuizMenu()">Retour</button>
+        </div>
+      </div>
+    `;
+
+    if (result.leveledUp) {
+      setTimeout(() => UI.showLevelUp(result.newLevel), 1000);
+    }
   },
 
   startQuiz(type) {
