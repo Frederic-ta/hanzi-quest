@@ -6,15 +6,19 @@ const Audio = {
   _ready: false,
 
   init() {
-    // Load voices
+    // Load voices (retry multiple times — mobile browsers load them async)
     const loadVoices = () => {
       this._voices = this.synth.getVoices();
-      this._ready = true;
+      if (this._voices.length > 0) this._ready = true;
     };
     loadVoices();
     if (this.synth.onvoiceschanged !== undefined) {
       this.synth.onvoiceschanged = loadVoices;
     }
+    // Fallback: retry loading voices after delays (iOS/Android quirk)
+    setTimeout(loadVoices, 500);
+    setTimeout(loadVoices, 1500);
+    setTimeout(loadVoices, 3000);
   },
 
   // Speak Chinese text

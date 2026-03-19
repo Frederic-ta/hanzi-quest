@@ -44,13 +44,21 @@ const App = {
     // Setup navigation
     this.setupNav();
 
-    // Resume audio context on first touch
-    document.addEventListener('touchstart', () => {
+    // Resume audio context on ANY touch/click (mobile browsers block audio until interaction)
+    const resumeAudio = () => {
+      // Resume AudioContext
       if (Audio._ctx && Audio._ctx.state === 'suspended') Audio._ctx.resume();
-    }, { once: true });
-    document.addEventListener('click', () => {
-      if (Audio._ctx && Audio._ctx.state === 'suspended') Audio._ctx.resume();
-    }, { once: true });
+      // Force-init AudioContext if not created yet
+      if (!Audio._ctx) {
+        try { Audio.getCtx(); } catch(e) {}
+      }
+      // Kick speechSynthesis on iOS (needs a dummy utterance after user gesture)
+      if (Audio.synth && Audio._voices.length === 0) {
+        Audio._voices = Audio.synth.getVoices();
+      }
+    };
+    document.addEventListener('touchstart', resumeAudio);
+    document.addEventListener('click', resumeAudio);
 
     // Show appropriate screen
     if (dueWords.length > 0) {
